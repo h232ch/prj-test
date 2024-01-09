@@ -33,8 +33,8 @@ export class BoardApiService extends ApiClientService<Board> {
         private httpClient: HttpClient,
         private router: Router,
     ) {
-        // super(httpClient, 'http://54.180.86.155:8000/api/boards/');
-        super(httpClient, 'http://localhost:8000/api/boards/');
+        super(httpClient, 'http://54.180.86.155:8000/api/boards/');
+        // super(httpClient, 'http://localhost:8000/api/boards/');
     }
 
     getAll(id?: number) {
@@ -86,7 +86,8 @@ export class BoardApiService extends ApiClientService<Board> {
     delete(id: number, imageId?: number) {
         let targetUrl = this.apiUrl;
         if (imageId) {
-            targetUrl = 'http://localhost:8000/api/images/';
+            targetUrl = 'http://54.180.86.155:8000/api/images/';
+            // targetUrl = 'http://localhost:8000/api/images/';
             this.httpClient.delete<void>(`${targetUrl}${imageId}`).subscribe(res => {
                 this.getById(id);
             }, errorMessage => {

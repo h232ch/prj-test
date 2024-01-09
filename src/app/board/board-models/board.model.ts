@@ -7,6 +7,10 @@ export interface Board {
     title: string;
     content: string;
     published: Date;
+    board_images?: File | {
+        id: string;
+        image: string;
+    };
     comments: {
         id: string;
         board: string;
@@ -35,6 +39,10 @@ export interface BoardPagination {
         title: string;
         content: string;
         published: Date;
+        board_images?: File | {
+            id: string;
+            image: string;
+        };
         comments: {
             id: string;
             email: string;
@@ -58,6 +66,10 @@ export interface Comment {
     email: string;
     board: number;
     comment: string;
+    comment_images?: File | {
+        id: string;
+        image: string;
+    };
     p_comment?: number;
     child_comments: {
         id: string,

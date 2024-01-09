@@ -17,13 +17,15 @@ export class CommentApiService extends ApiClientService<Comment> {
     private router: Router,
     private boardApiService: BoardApiService,
   ) {
-    super(httpClient, 'http://54.180.86.155:8000/api/comments/');
+    // super(httpClient, 'http://54.180.86.155:8000/api/comments/');
+    super(httpClient, 'http://localhost:8000/api/comments/');
   }
 
-  create(item: Comment, id?: number, childCommentOption?: boolean, parentId?: number): void {
+  create(item: FormData, id?: number, childCommentOption?: boolean, parentId?: number): void {
     let targetUrl = this.apiUrl;
     if (childCommentOption) {
-      targetUrl = 'http://54.180.86.155:8000/api/child_comments/'
+      // targetUrl = 'http://54.180.86.155:8000/api/child_comments/'
+      targetUrl = 'http://localhost:8000/api/child_comments/'
     }
     this.httpClient.post<Comment>(`${targetUrl}`, item).subscribe(res => {
       this.boardApiService.getById(id);
@@ -33,10 +35,10 @@ export class CommentApiService extends ApiClientService<Comment> {
   }
 
   delete(id: number, boardId?: number, childCommentOption?: boolean): void {
-    console.log('test')
     let targetUrl = this.apiUrl;
     if (childCommentOption) {
-      targetUrl = 'http://54.180.86.155:8000/api/child_comments/'
+      // targetUrl = 'http://54.180.86.155:8000/api/child_comments/'
+      targetUrl = 'http://localhost:8000/api/child_comments/'
     }
     this.httpClient.delete(`${targetUrl}${id}`).subscribe(res => {
       this.boardApiService.getById(boardId);
@@ -45,13 +47,23 @@ export class CommentApiService extends ApiClientService<Comment> {
     })
   }
 
+  deleteImage(imageId: number, boardId: number,) {
+    let targetUrl = 'http://localhost:8000/api/comment_images/'
+    this.httpClient.delete(`${targetUrl}${imageId}`).subscribe(res => {
+      this.boardApiService.getById(boardId);
+    }, errorMessage => {
+      this.boardApiService.error.next(errorMessage.error);
+    });
+  }
+
   getAll(): void {
   }
 
   getById(id: number, childCommentOption?: boolean): void {
     let targetUrl = this.apiUrl;
     if (childCommentOption) {
-      targetUrl = 'http://54.180.86.155:8000/api/child_comments/'
+      // targetUrl = 'http://54.180.86.155:8000/api/child_comments/'
+      targetUrl = 'http://localhost:8000/api/child_comments/'
     }
     this.httpClient.get<Comment>(`${targetUrl}${id}`).subscribe(res => {
       this.comment.next(res);
@@ -60,10 +72,11 @@ export class CommentApiService extends ApiClientService<Comment> {
     });
   }
 
-  update(id: number, item: Comment, boardId: number, childCommentOption?: boolean): void {
+  update(id: number, item: FormData, boardId: number, childCommentOption?: boolean): void {
     let targetUrl = this.apiUrl;
     if (childCommentOption) {
-      targetUrl = 'http://54.180.86.155:8000/api/child_comments/'
+      // targetUrl = 'http://54.180.86.155:8000/api/child_comments/'
+      targetUrl = 'http://localhost:8000/api/child_comments/'
     }
     this.httpClient.put<Comment>(`${targetUrl}${id}/`, item).subscribe(res => {
       this.boardApiService.getById(boardId);

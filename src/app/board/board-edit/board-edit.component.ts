@@ -2,8 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Board} from "../board-models/board.model";
-import {Observable, Subject,} from "rxjs";
-import {AuthService} from "../../auth/auth.service";
+import {Subject} from "rxjs";
 import {User} from "../../auth/user.model";
 import {takeUntil} from "rxjs/operators";
 import {BoardApiService} from "../board-api-service";
@@ -14,11 +13,21 @@ import {BoardApiService} from "../board-api-service";
     styleUrls: ['./board-edit.component.css']
 })
 export class BoardEditComponent implements OnInit, OnDestroy {
+    // uploading images variables
+    selectedFiles: File[];
+    board_images: File[];
+    deletionImages: File[] = [];
+
     boardForm: FormGroup;
+    boardData='boardData';
+
     id: number;
+    board: Board;
+    error: string;
     editMode = false;
     user: User;
-    error: string;
+
+
 
     private currentPage: number;
     private destroySub = new Subject<void>();
@@ -27,7 +36,6 @@ export class BoardEditComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private boardApiService: BoardApiService,
-        private authService: AuthService,
     ) {
     }
 
@@ -50,47 +58,64 @@ export class BoardEditComponent implements OnInit, OnDestroy {
 
         // to patch values when editing forms
         this.boardApiService.boardChanged.subscribe(res => {
+            this.board = res;
+            this.board_images = res.board_images as unknown as File[];
             this.boardForm.patchValue({
                 boardData: {
-                    title: res.title,
-                    content: res.content
+                    title: this.board.title,
+                    content: this.board.content,
                 }
             });
         })
     }
 
-    onSubmit() {
-        this.authService.user.subscribe(res => {
-            const boardData = this.boardForm.value.boardData;
-            const board = this.onChangeBoard(boardData);
-
-            return this.editMode
-                ? this.boardApiService.update(this.id, board, this.currentPage)
-                : this.boardApiService.create(board);
-        })
+    // to check out what key/value in there.
+    displayFormData(formData: any): void {
+        for (let entry of formData.entries()) {
+            const key = entry[0];
+            const value = entry[1];
+            console.log(`${key}:`, value);
+        }
     }
 
-    onChangeBoard(boardData: Board): Board {
-        if (this.editMode) {
-            return {
-                id: undefined,
-                user: undefined,
-                email: undefined,
-                title: boardData.title,
-                content: boardData.content,
-                published: boardData.published,
-                comments: undefined,
+    // latest
+
+    onSubmit() {
+        // Image files delete on submit
+        for (let deletionImage of this.deletionImages) {
+            const imageId = deletionImage['id'];
+            this.boardApiService.delete(this.id, imageId);
+        } this.deletionImages = [];
+
+        const boardData = this.boardForm.value.boardData;
+        const formData: FormData = this.onChangeBoard(boardData);
+
+        return this.editMode
+            ? this.boardApiService.update(this.id, formData, this.currentPage)
+            : this.boardApiService.create(formData);
+    }
+
+
+    onChangeBoard(boardData: Board): FormData {
+        const formData = new FormData();
+
+        Object.keys(boardData).forEach(key => {
+            if (key !== 'images') { // If the key is not 'image', make this text field
+                formData.append(key, boardData[key]);
+            }
+        });
+
+        if (this.selectedFiles && this.selectedFiles.length > 0) {
+            for (const file of this.selectedFiles) {
+                formData.append('images', file);
             }
         }
-        return {
-            id: undefined,
-            user: undefined,
-            email: undefined,
-            title: boardData.title,
-            content: boardData.content,
-            published: new Date(),
-            comments: undefined,
+
+        if (!this.editMode) {
+            formData.append('published', new Date().toISOString());
         }
+
+        return formData;
     }
 
     onCancel() {
@@ -105,6 +130,7 @@ export class BoardEditComponent implements OnInit, OnDestroy {
                     [Validators.required]),
                 'content': new FormControl<string>('',
                     [Validators.required]),
+                'images': new FormControl<File>(null)
             }),
         });
 
@@ -120,5 +146,13 @@ export class BoardEditComponent implements OnInit, OnDestroy {
 
     onHandleError() {
         this.error = null;
+    }
+
+    onDeleteImage(deletionImages: File[]) {
+        this.deletionImages = deletionImages;
+    }
+
+    onSelectedFiles(selectedFiles: File[]) {
+        this.selectedFiles = selectedFiles;
     }
 }

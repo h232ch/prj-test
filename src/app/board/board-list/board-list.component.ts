@@ -15,18 +15,20 @@ export class BoardListComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
 
     boards: Board[];
-    searchData: BoardSearch;
     searchString: string;
     searchSw = false;
 
     // Pagination
     currentPage: number = 1;
-    itemsPerPage: number = 5;
+    itemsPerPage: number = 7;
     totalItems: number;
     startPage: number = 1;
     pageSize: number = 4;
     boardsLength: number;
     isLoading: boolean = false;
+
+    // FormData
+    formData = new FormData();
 
     constructor(
         private boardApiService: BoardApiService,
@@ -37,11 +39,12 @@ export class BoardListComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.isLoading = true;
+        this.boardApiService.searchData = undefined;
         this.boardApiService.isLoading
             .pipe(takeUntil(this.destroy$))
             .subscribe(res => {
-            this.isLoading = res;
-        })
+                this.isLoading = res;
+            })
 
         this.boardApiService.boardsChanged
             .pipe(takeUntil(this.destroy$))
@@ -72,8 +75,9 @@ export class BoardListComponent implements OnInit, OnDestroy {
 
     fetchData(): void {
         if (this.searchSw) {
-            this.searchData.id = this.currentPage;
-            this.boardApiService.search(this.searchData);
+            this.formData.delete('id');
+            this.formData.append('id', this.currentPage.toString());
+            this.boardApiService.search(this.formData);
         } else {
             this.boardApiService.getAll(this.currentPage)
         }
@@ -84,9 +88,16 @@ export class BoardListComponent implements OnInit, OnDestroy {
         this.fetchData();
     }
 
-    onSearch($event: BoardSearch) {
-        this.searchData = $event;
-        this.boardApiService.search(this.searchData);
+    onSearch(searchData: BoardSearch) {
+        // ToDo: Change to init this formData
+        this.formData = new FormData();
+
+        Object.keys(searchData).forEach(key => {
+            this.formData.append(key, searchData[key]);
+        })
+
+        this.boardApiService.search(this.formData);
+
         this.boardApiService.initPagination();
         this.searchSw = true;
     }
@@ -99,6 +110,10 @@ export class BoardListComponent implements OnInit, OnDestroy {
     onInitSearch() {
         this.searchSw = false;
         this.searchString = '';
+        this.boardApiService.searchData = undefined;
+
+        // ToDo: Change to init this formData
+        this.formData = new FormData();
 
         this.boardApiService.initPagination();
         this.currentPage = 1;

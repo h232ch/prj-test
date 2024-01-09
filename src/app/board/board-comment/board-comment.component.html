@@ -63,6 +63,15 @@
         </div>
         <div class="col-sm-12">
             <p> {{ comment.comment }} </p>
+        </div>
+        <ng-container *ngFor="let image of comment.comment_images">
+            <div class="col-sm-12" style="margin-bottom: 10px">
+                <a [href]="image.image" target="_blank">
+                    <img [src]="image.image" class="img-responsive">
+                </a>
+            </div>
+        </ng-container>
+        <div class="col-sm-12">
             <hr>
         </div>
         <div class="col-sm-12">

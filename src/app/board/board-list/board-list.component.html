@@ -32,10 +32,10 @@
            [routerLink]=board.id
            class="list-group-item clearfix">
             <div class="pull-left">
-                <h4
+                <h5 style="font-size: 17px"
                         class="list-group-item-heading">
-                    {{ (board.title.length > 25) ? (board.title | slice:0:25) + '...' : (board.title) }}
-                </h4>
+                   [{{ board.id }}]  {{ (board.title.length > 45) ? (board.title | slice:0:45) + '...' : (board.title) }}
+                </h5>
                 <p class="list-group-item-text"><span class="glyphicon glyphicon-barcode"></span>
                     {{ board.email }}
                     {{ board.published | date : 'yyyy-M-d HH:mm:ss'}}</p>

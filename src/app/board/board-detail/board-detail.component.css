@@ -1,19 +1,18 @@
+
 p {
   /* Add your custom styles here */
   word-wrap: break-word; /* This ensures that long words are broken and do not overflow */
   font-size: 15px;
 }
 
-dd, dt {
-  word-wrap: break-word;
-  font-size: 14px;
-}
-
 h2 {
   word-wrap: break-word;
 }
-
 ul li a {
   cursor: pointer;
 }
 
+dd, dt {
+  word-wrap: break-word;
+  font-size: 14px;
+}

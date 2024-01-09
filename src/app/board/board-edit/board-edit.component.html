@@ -1,67 +1,76 @@
 <div class="row">
-  <div class="col-sm-12">
-    <app-alert [message]="error"
-               *ngIf="error"
-               (close)="onHandleError()">
-    </app-alert>
+    <div class="col-sm-12">
+        <app-alert [message]="error"
+                   *ngIf="error"
+                   (close)="onHandleError()">
+        </app-alert>
 
-    <form [formGroup]="boardForm" (ngSubmit)="onSubmit()">
-      <div class="row">
-        <div class="col-sm-12">
-          <button
-            class="btn btn-success"
-            type="submit"
-            routerLinkActive="active"
-            [disabled]="!boardForm.valid"
-          >Save
-          </button>
-          <button
-            class="btn btn-danger"
-            (click)="onCancel()"
-            routerLinkActive="active">Cancel
-          </button>
-        </div>
-      </div>
-      <hr>
-
-      <div formGroupName="boardData">
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="form-group">
-              <label for="title">Board title</label>
-              <input type="text"
-                     class="form-control"
-                     id="title"
-                     formControlName="title">
-              <span *ngIf="!boardForm.get('boardData.title').valid && boardForm.get('boardData.title').touched">
-                <span *ngIf="boardForm.get('boardData.title').errors['required']" class="help-block">
-                  The name field is required.
-                </span>
-              </span>
+        <form [formGroup]="boardForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+                <div class="col-sm-12">
+                    <button
+                            class="btn btn-success"
+                            type="submit"
+                            routerLinkActive="active"
+                            [disabled]="!boardForm.valid"
+                    >Save
+                    </button>
+                    <button
+                            class="btn btn-danger"
+                            (click)="onCancel()"
+                            routerLinkActive="active">Cancel
+                    </button>
+                </div>
             </div>
-          </div>
-        </div>
+            <hr>
 
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="form-group">
-              <label for="content">Board content</label>
-              <textarea type="text"
-                        class="form-control"
-                        id="content"
-                        formControlName="content">
-              </textarea>
-              <span *ngIf="!boardForm.get('boardData.content').valid && boardForm.get('boardData.content').touched">
-                <span *ngIf="boardForm.get('boardData.content').errors['required']" class="help-block">
-                  The detail field is required.
-                </span>
-              </span>
+            <div formGroupName="boardData">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="title">Board title</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="title"
+                                   formControlName="title">
+                            <span *ngIf="!boardForm.get('boardData.title').valid && boardForm.get('boardData.title').touched">
+                            <span *ngIf="boardForm.get('boardData.title').errors['required']" class="help-block">
+                                The name field is required. </span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="content">Board content</label>
+                            <textarea type="text"
+                                      class="form-control"
+                                      id="content"
+                                      formControlName="content">
+                            </textarea>
+                            <span *ngIf="!boardForm.get('boardData.content').valid && boardForm.get('boardData.content').touched">
+                            <span *ngIf="boardForm.get('boardData.content').errors['required']" class="help-block">
+                                The detail field is required. </span></span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <app-image-upload
+                                [item]="board"
+                                [item_images]="board_images"
+                                [itemForm]="boardForm"
+                                [itemData]="boardData"
+                                (onSelectedFiles)="onSelectedFiles($event)"
+                                (onDeleteImages)="onDeleteImage($event)">
+                        </app-image-upload>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-    </form>
-  </div>
+        </form>
+    </div>
 </div>
 

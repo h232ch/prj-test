@@ -15,6 +15,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   isLoading = false;
 
   error: string;
+  isLoadingSub: Subscription;
   private errorSub: Subscription;
   private authSub: Subscription;
 
@@ -25,7 +26,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.authService.isLoading
+    this.isLoadingSub = this.authService.isLoading
         .subscribe(res => {
           this.isLoading = res;
         })
@@ -76,7 +77,6 @@ export class AuthComponent implements OnInit, OnDestroy {
       const user: User = this.userForm.value.userData;
       this.authSub = this.authService.join(user);
     }
-    // this.isLoading = false;
   }
 
   onSwitchMode() {
@@ -96,6 +96,9 @@ export class AuthComponent implements OnInit, OnDestroy {
     }
     if (this.authSub) {
       this.authSub.unsubscribe();
+    }
+    if (this.isLoadingSub) {
+      this.isLoadingSub.unsubscribe();
     }
   }
 }

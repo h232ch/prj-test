@@ -23,12 +23,21 @@ export class BoardCommentEditComponent implements OnInit, OnDestroy {
 
     @Input() childCommentMode = false;
     @Input() parentCommentId: number;
+
     @Output() onChildCommentModeChange = new EventEmitter<boolean>();
     @Output() onParentCommentIdChange = new EventEmitter<boolean>();
 
 
     boardId: number;
+
+    // uploading images variables
+    comment: Comment;
     commentForm: FormGroup;
+    commentData = 'commentData';
+    comment_images: File[];
+    selectedFiles: File[];
+    deletionImages: File[] = [];
+
 
     constructor(
         private commentApiService: CommentApiService,
@@ -37,24 +46,33 @@ export class BoardCommentEditComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.commentApiServiceSub = this.commentApiService.comment
-            // .pipe(takeUntil(this.destroy$))
-            .subscribe(res => {
-            this.commentForm.patchValue({
-                comment: res.comment,
-            })
-        })
+
         this.route.params.pipe()
             .subscribe((params: Params) => {
                 this.boardId = +params['id'];
+                this.initForm();
             })
-        this.initForm();
+
+        this.commentApiServiceSub = this.commentApiService.comment
+            // .pipe(takeUntil(this.destroy$))
+            .subscribe(res => {
+                this.comment = res;
+                this.comment_images = res.comment_images as unknown as File[];
+                this.commentForm.patchValue({
+                    commentData: {
+                        comment: res.comment,
+                    }
+                })
+            })
     }
 
     private initForm() {
         this.commentForm = new FormGroup({
-            'comment': new FormControl<string>('',
-                [Validators.required]),
+            commentData: new FormGroup({
+                'comment': new FormControl<string>('',
+                    [Validators.required]),
+                'images': new FormControl<File>(null),
+            })
         });
 
         if (this.commentId && !this.parentCommentId) {
@@ -63,59 +81,52 @@ export class BoardCommentEditComponent implements OnInit, OnDestroy {
             } else {
                 this.commentApiService.getById(this.commentId);
             }
-
         }
-
     }
 
     onSubmit() {
-        const commentData = this.commentForm.value;
-        const comment: Comment = this.onChangeComment(commentData);
+        for (let deletionImage of this.deletionImages) {
+            const imageId = deletionImage['id'];
+            this.commentApiService.deleteImage(imageId, this.boardId);
+        }
+        this.deletionImages = [];
 
-        if (this.commentId && !this.parentCommentId) {
-            this.commentApiService.update(this.commentId, comment, this.boardId, this.childCommentMode);
+        const commentData = this.commentForm.value.commentData;
+        const formData: FormData = this.onChangeComment(commentData);
+
+        if (this.commentId) {
+            // edit comment, child comment
+            this.commentApiService.update(this.commentId, formData, this.boardId, this.childCommentMode);
         } else if (this.parentCommentId) {
-            this.commentApiService.create(comment, this.boardId, this.childCommentMode, this.parentCommentId);
+            // new child comment
+            this.commentApiService.create(formData, this.boardId, this.childCommentMode, this.parentCommentId);
         } else {
-            this.commentApiService.create(comment, this.boardId);
+            // New comment
+            this.commentApiService.create(formData, this.boardId);
         }
         this.init();
     }
 
-    onChangeComment(commentForm: Comment) {
-        let comment: any;
+    onChangeComment(commentData: Comment): FormData {
+        const formData = new FormData();
+
         if (this.parentCommentId) {
-            comment = {
-                id: undefined,
-                email: undefined,
-                board: this.boardId,
-                comment: commentForm.comment,
-                p_comment: this.parentCommentId,
-                published: new Date(),
-            };
-            return comment;
+            formData.append('p_comment', this.parentCommentId.toString());
         }
-
+        if (this.selectedFiles) {
+            for (const file of this.selectedFiles) {
+                formData.append('images', file);
+            }
+        }
         if (this.commentId) {
-            comment = {
-                id: undefined,
-                email: undefined,
-                board: this.boardId,
-                comment: commentForm.comment,
-                published: new Date(),
-            };
-            return comment;
+            formData.append('board', this.boardId.toString());
+            formData.append('comment', commentData.comment);
+        } else {
+            formData.append('board', this.boardId.toString());
+            formData.append('comment', commentData.comment);
+            formData.append('published', new Date().toISOString());
         }
-
-        comment = {
-            id: this.commentId,
-            email: undefined,
-            board: this.boardId,
-            comment: commentForm.comment,
-            published: new Date(),
-        };
-        return comment;
-
+        return formData;
     }
 
     onCancel() {
@@ -134,6 +145,14 @@ export class BoardCommentEditComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.commentApiServiceSub.unsubscribe();
+    }
+
+    onSelectedFiles(selectedFiles: File[]) {
+        this.selectedFiles = selectedFiles;
+    }
+
+    onDeleteImage(deletionImages: File[]) {
+        this.deletionImages = deletionImages;
     }
 
 }

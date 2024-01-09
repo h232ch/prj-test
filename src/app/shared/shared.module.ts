@@ -7,6 +7,7 @@ import {LoadingSpinnerComponent} from "./loading-spinner/loading-spinner.compone
 import {CommonModule} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
+import { ImageUploadComponent } from './image-upload/image-upload.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import {HttpClientModule} from "@angular/common/http";
     DropdownHeaderDirective,
     PaginationComponent,
     LoadingSpinnerComponent,
+    ImageUploadComponent,
   ],
   exports: [
     AlertComponent,
@@ -22,6 +24,7 @@ import {HttpClientModule} from "@angular/common/http";
     DropdownHeaderDirective,
     PaginationComponent,
     LoadingSpinnerComponent,
+    ImageUploadComponent,
 
     CommonModule,
     FormsModule,

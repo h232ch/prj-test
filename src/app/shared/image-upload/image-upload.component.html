@@ -1,0 +1,27 @@
+<form [formGroup]="itemForm">
+    <div [formGroupName]="itemData">
+        <div class="form-group">
+            <label for="images">Images upload</label>
+            <input type="file"
+                   formControlName="images"
+                   (change)="onFileSelected($event)"
+                   id="images"
+                   multiple>
+        </div>
+        <!-- Display selected files -->
+        <div *ngIf="selectedFiles && selectedFiles.length > 0">
+            <p>Selected Files: </p>
+            <ul>
+                <li *ngFor="let file of selectedFiles">{{ file.name }}</li>
+            </ul>
+        </div>
+        <div *ngIf="item_images && item_images.length > 0">
+            <p>Stored Files: </p>
+            <ul>
+                <li *ngFor="let board_image of item_images; let i = index">
+                    {{ board_image.id }} | <a (click)="onDeleteImage(i)">Delete</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</form>

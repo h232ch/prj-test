@@ -1,17 +1,32 @@
 <div class="row">
     <div class="col-sm-12">
-        <form [formGroup]="commentForm"
-              (ngSubmit)="onSubmit()">
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <label for="comment"></label>
-                        <textarea type="text"
-                                  class="form-control"
-                                  id="comment"
-                                  formControlName="comment"></textarea>
+        <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+            <div formGroupName="commentData">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="comment"></label>
+                            <textarea type="text"
+                                      class="form-control"
+                                      id="comment"
+                                      formControlName="comment"></textarea>
+                        </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <app-image-upload
+                                [item]="comment"
+                                [item_images]="comment_images"
+                                [itemData]="commentData"
+                                [itemForm]="commentForm"
+                                (onSelectedFiles)="onSelectedFiles($event)"
+                                (onDeleteImages)="onDeleteImage($event)">
+                        </app-image-upload>
+                    </div>
+                </div>
+
             </div>
             <div class="row">
                 <div class="col-sm-12 text-right">

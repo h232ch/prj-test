@@ -28,9 +28,7 @@ export class BoardDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private boardApiService: BoardApiService,
     private authService: AuthService,
-    private router: Router,
-  ) {
-  }
+    private router: Router) {}
 
   ngOnInit(): void {
 
@@ -60,7 +58,6 @@ export class BoardDetailComponent implements OnInit, OnDestroy {
 
   onDeleteBoard() {
     this.id = +this.board.id;
-    // console.log('ondelete test')
     this.boardApiService.delete(this.id);
   }
 

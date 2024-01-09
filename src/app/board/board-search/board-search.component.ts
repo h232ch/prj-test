@@ -29,4 +29,7 @@ export class BoardSearchComponent implements OnInit {
 
   }
 
+  searchDataInit() {
+    this.search = '';
+  }
 }

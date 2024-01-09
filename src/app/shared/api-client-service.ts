@@ -13,7 +13,7 @@ export abstract class ApiClientService<T> {
 
   abstract getAll(): void;
   abstract getById(id: number): void;
-  abstract create(item: T): void;
-  abstract update(id: number, item: T, currentPage: number): void;
+  abstract create(item: FormData): void;
+  abstract update(id: number, item: FormData, currentPage: number): void;
   abstract delete(id: number): void;
 }

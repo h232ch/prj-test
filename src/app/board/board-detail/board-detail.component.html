@@ -40,7 +40,14 @@
         <div class="col-sm-12" style="margin-top: 15px; margin-bottom: 140px">
             <p class="custom-paragraph">{{ board.content }}</p>
         </div>
-        <div class="col-sm-12">
+        <ng-container *ngFor="let image of board.board_images">
+            <div class="col-sm-12" style="margin-bottom: 10px">
+                <a [href]="image.image" target="_blank">
+                    <img [src]="image.image" class="img-responsive">
+                </a>
+            </div>
+        </ng-container>
+        <div class="col-sm-12" style="margin-bottom: 20px; margin-top: 20px">
             <app-board-comment
                     [user]="user"
                     [comments]="board.comments">
